@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>CleanSlate · 小橘帮你守键盘</title>
+<meta name="description" content="一键锁住键盘和触控板、屏幕全黑，安心擦 Mac。同时按住两个 ⌘ 3 秒解锁。免费开源。" />
+<link rel="icon" href="assets/favicon.png" />
+<meta property="og:title" content="CleanSlate · 小橘帮你守键盘" />
+<meta property="og:description" content="一键锁住键盘和触控板、屏幕全黑，安心擦 Mac。" />
+<meta property="og:image" content="assets/icon.png" />
+<style>
+  :root {
+    --orange: #f08c45;
+    --orange-deep: #e06e33;
+    --plum: #6e4063;
+    --cream: #fdf6ee;
+    --bg: #fdf8f3;
+    --card: #ffffff;
+    --text: #2b2226;
+    --muted: #7a6d72;
+    --line: rgba(110, 64, 99, 0.12);
+    --shadow: 0 10px 30px rgba(110, 64, 99, 0.12);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #1c1719;
+      --card: #272023;
+      --text: #f3ece8;
+      --muted: #a8999e;
+      --line: rgba(255, 255, 255, 0.08);
+      --shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+    }
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: ui-rounded, "SF Pro Rounded", -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", sans-serif;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; }
+  .wrap { max-width: 960px; margin: 0 auto; padding: 0 20px; }
+
+  nav { display: flex; align-items: center; justify-content: space-between; padding: 20px 0; }
+  nav .brand { display: flex; align-items: center; gap: 10px; font-weight: 700; text-decoration: none; }
+  nav .brand img { width: 32px; height: 32px; }
+  nav .links a { margin-left: 20px; color: var(--muted); text-decoration: none; font-size: 15px; }
+  nav .links a:hover { color: var(--orange-deep); }
+
+  .hero {
+    text-align: center;
+    padding: 48px 0 32px;
+    background: radial-gradient(ellipse at top, rgba(110, 64, 99, 0.16), transparent 60%);
+  }
+  .hero .icon { width: 148px; height: 148px; filter: drop-shadow(0 16px 24px rgba(110, 64, 99, 0.3)); animation: breathe 4s ease-in-out infinite; transform-origin: bottom center; }
+  @keyframes breathe { 50% { transform: scale(1.025); } }
+  @media (prefers-reduced-motion: reduce) { .hero .icon { animation: none; } }
+  .hero h1 { font-size: clamp(34px, 6vw, 52px); margin: 18px 0 6px; letter-spacing: -0.02em; }
+  .hero p.tag { font-size: clamp(17px, 2.6vw, 21px); color: var(--muted); margin: 0 auto 28px; max-width: 32em; }
+  .buttons { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; }
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 13px 26px; border-radius: 999px; font-weight: 600; font-size: 16px;
+    text-decoration: none; transition: transform .15s ease, box-shadow .15s ease;
+  }
+  .btn:hover { transform: translateY(-1px); }
+  .btn.primary { color: #fff; background: linear-gradient(var(--orange), var(--orange-deep)); box-shadow: 0 8px 20px rgba(240, 140, 69, 0.35); }
+  .btn.ghost { border: 1.5px solid var(--line); background: var(--card); }
+  .hero small { display: block; margin-top: 14px; color: var(--muted); font-size: 13px; }
+
+  section { padding: 56px 0; }
+  h2 { text-align: center; font-size: clamp(24px, 4vw, 32px); margin: 0 0 8px; }
+  .sub { text-align: center; color: var(--muted); margin: 0 0 36px; }
+
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 22px; padding: 24px; box-shadow: var(--shadow); }
+  .card .emoji { font-size: 30px; }
+  .card h3 { margin: 10px 0 6px; font-size: 18px; }
+  .card p { margin: 0; color: var(--muted); font-size: 15px; }
+
+  .steps { counter-reset: step; }
+  .steps .card h3::before {
+    counter-increment: step; content: counter(step);
+    display: inline-grid; place-items: center; width: 26px; height: 26px; margin-right: 8px;
+    border-radius: 50%; background: var(--orange); color: #fff; font-size: 14px;
+  }
+  kbd {
+    display: inline-block; min-width: 24px; padding: 1px 6px; border-radius: 6px; text-align: center;
+    border: 1px solid var(--line); background: var(--bg); font-family: inherit; font-weight: 600;
+  }
+
+  .shots { display: flex; flex-wrap: wrap; gap: 20px; justify-content: center; }
+  .shots img { width: min(360px, 100%); border-radius: 22px; box-shadow: var(--shadow); border: 1px solid var(--line); }
+
+  .support { text-align: center; background: var(--card); border: 1px solid var(--line); border-radius: 28px; padding: 40px 24px; box-shadow: var(--shadow); }
+  .support .can { font-size: 46px; }
+  .support p { color: var(--muted); max-width: 30em; margin: 8px auto 24px; }
+
+  footer { text-align: center; color: var(--muted); font-size: 13px; padding: 40px 0 56px; }
+  footer a { color: var(--muted); }
+
+  @media (max-width: 520px) {
+    nav .links a:not(.gh) { display: none; }
+  }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <nav>
+      <a class="brand" href="#"><img src="assets/icon.png" alt="" />CleanSlate</a>
+      <div class="links">
+        <a href="#features">功能</a>
+        <a href="#how">怎么用</a>
+        <a href="#support">支持小橘</a>
+        <a class="gh" href="https://github.com/SEUWanglibo/CleanSlate">GitHub</a>
+      </div>
+    </nav>
+  </div>
+
+  <header class="hero">
+    <div class="wrap">
+      <img class="icon" src="assets/icon.png" alt="CleanSlate 图标：一只趴着打盹的橘猫" />
+      <h1>CleanSlate</h1>
+      <p class="tag">一键锁住键盘和触控板、屏幕全黑。<br />小橘帮你守着，安心把 Mac 擦干净。</p>
+      <div class="buttons">
+        <a class="btn primary" id="download" href="https://github.com/SEUWanglibo/CleanSlate#安装">🐾 免费获取</a>
+        <a class="btn ghost" href="https://github.com/SEUWanglibo/CleanSlate">⭐ 在 GitHub 上 Star</a>
+      </div>
+      <small>免费开源 · macOS 13 及以上 · MIT 协议</small>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section id="features">
+      <h2>擦电脑，再也不怕误触</h2>
+      <p class="sub">三个开关随意组合，想锁什么锁什么</p>
+      <div class="grid">
+        <div class="card"><div class="emoji">⌨️</div><h3>锁键盘</h3><p>所有按键都被拦住，连音量、亮度键也不会乱跳。</p></div>
+        <div class="card"><div class="emoji">🖱️</div><h3>锁触控板</h3><p>点击、滑动、滚动统统无效，光标也藏起来。</p></div>
+        <div class="card"><div class="emoji">🌙</div><h3>黑屏</h3><p>所有显示器变成纯黑，灰尘和指纹一眼就能看见。</p></div>
+        <div class="card"><div class="emoji">⏱️</div><h3>自动解锁</h3><p>1 到 10 分钟后自动解锁，永远不会把自己锁在外面。</p></div>
+      </div>
+    </section>
+
+    <section id="how">
+      <h2>三步搞定</h2>
+      <p class="sub">第一次用建议先只开「黑屏」试试</p>
+      <div class="grid steps">
+        <div class="card"><h3>选好要锁的</h3><p>点亮键盘、触控板、黑屏中想要的几项。</p></div>
+        <div class="card"><h3>开始打扫</h3><p>点「开始打扫」，小橘就睡在屏幕上替你看着。</p></div>
+        <div class="card"><h3>叫醒小橘</h3><p>同时按住左右两个 <kbd>⌘</kbd> <kbd>⌘</kbd> 3 秒，爪印转满就解锁。</p></div>
+      </div>
+    </section>
+
+    <section>
+      <h2>浅色深色都好看</h2>
+      <p class="sub">跟随系统外观自动切换</p>
+      <div class="shots">
+        <img src="screenshot-light.png" alt="CleanSlate 浅色模式界面" loading="lazy" />
+        <img src="screenshot-dark.png" alt="CleanSlate 深色模式界面" loading="lazy" />
+      </div>
+    </section>
+
+    <section id="support">
+      <div class="support">
+        <div class="can">🐟</div>
+        <h2>请小橘吃个罐头</h2>
+        <p>CleanSlate 免费开源。如果它帮你把 Mac 擦得干干净净，欢迎给个 Star，或者请小橘吃个罐头，支持它继续长胖。</p>
+        <div class="buttons" id="support-buttons">
+          <a class="btn ghost" href="https://github.com/SEUWanglibo/CleanSlate">⭐ 给个 Star</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      Made with 🧡 by <a href="https://github.com/SEUWanglibo">WANGLIBO</a> ·
+      <a href="https://github.com/SEUWanglibo/CleanSlate/blob/main/LICENSE">MIT License</a>
+    </div>
+  </footer>
+
+<script>
+  // 开通收款或发布安装包后，在这里填链接，对应按钮会自动出现
+  const LINKS = {
+    download: "",   // 例如 GitHub Release 或 Gumroad 的下载 / 购买地址
+    afdian: "",     // 爱发电主页
+    sponsors: "",   // GitHub Sponsors，例如 https://github.com/sponsors/SEUWanglibo
+  };
+
+  if (LINKS.download) {
+    const btn = document.getElementById("download");
+    btn.href = LINKS.download;
+    btn.textContent = "🐾 下载 CleanSlate";
+  }
+  const support = document.getElementById("support-buttons");
+  const addButton = (href, label, primary) => {
+    const a = document.createElement("a");
+    a.className = primary ? "btn primary" : "btn ghost";
+    a.href = href;
+    a.textContent = label;
+    support.prepend(a);
+  };
+  if (LINKS.sponsors) addButton(LINKS.sponsors, "💖 GitHub Sponsors", false);
+  if (LINKS.afdian) addButton(LINKS.afdian, "🐟 去爱发电投喂", true);
+</script>
+</body>
+</html>

@@ -26,6 +26,7 @@ struct ContentView: View {
     @ObservedObject var controller: CleanupController
 
     private static let autoUnlockChoices = [0, 1, 3, 5, 10]
+    private static let supportURL = URL(string: "https://seuwanglibo.github.io/CleanSlate/#support")!
 
     var body: some View {
         VStack(spacing: 22) {
@@ -76,6 +77,19 @@ struct ContentView: View {
             }
 
             unlockHint
+
+            Button {
+                NSWorkspace.shared.open(Self.supportURL)
+            } label: {
+                Text("🐟 请小橘吃罐头")
+                    .font(Theme.rounded(12, .medium))
+                    .foregroundColor(Theme.orangeDeep)
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 5)
+                    .background(Capsule().fill(Theme.orange.opacity(0.1)))
+            }
+            .buttonStyle(.plain)
+            .help("喜欢的话，支持一下开发者")
 
             if let error = controller.errorMessage {
                 Text(error).font(Theme.rounded(12)).foregroundColor(.red)
