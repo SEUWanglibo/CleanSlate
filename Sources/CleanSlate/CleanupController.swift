@@ -15,6 +15,8 @@ final class CleanupController: ObservableObject {
     @Published private(set) var showHint = false
     @Published private(set) var hasAccessibilityPermission = AXIsProcessTrusted()
     @Published var errorMessage: String?
+    /// 「请小橘吃罐头」收款码弹窗
+    @Published var showingTipJar = false
 
     static let holdDuration: TimeInterval = 3
 

@@ -5,10 +5,10 @@ struct CleanSlateApp: App {
     @StateObject private var controller = CleanupController()
 
     init() {
-        // 开发用：CleanSlate --snapshot <out.png> [--dark] 把主界面离屏渲染成图片后退出
+        // 开发用：CleanSlate --snapshot <out.png> [--dark] [--tipjar] 把主界面离屏渲染成图片后退出
         let args = CommandLine.arguments
         if let i = args.firstIndex(of: "--snapshot"), i + 1 < args.count {
-            Snapshot.render(to: args[i + 1], dark: args.contains("--dark"))
+            Snapshot.render(to: args[i + 1], dark: args.contains("--dark"), tipJar: args.contains("--tipjar"))
             exit(0)
         }
     }
@@ -26,7 +26,6 @@ struct ContentView: View {
     @ObservedObject var controller: CleanupController
 
     private static let autoUnlockChoices = [0, 1, 3, 5, 10]
-    private static let supportURL = URL(string: "https://seuwanglibo.github.io/CleanSlate/#support")!
 
     var body: some View {
         VStack(spacing: 22) {
@@ -79,7 +78,7 @@ struct ContentView: View {
             unlockHint
 
             Button {
-                NSWorkspace.shared.open(Self.supportURL)
+                controller.showingTipJar = true
             } label: {
                 Text("🐟 请小橘吃罐头")
                     .font(Theme.rounded(12, .medium))
@@ -90,6 +89,9 @@ struct ContentView: View {
             }
             .buttonStyle(.plain)
             .help("喜欢的话，支持一下开发者")
+            .popover(isPresented: $controller.showingTipJar, arrowEdge: .bottom) {
+                TipJarView()
+            }
 
             if let error = controller.errorMessage {
                 Text(error).font(Theme.rounded(12)).foregroundColor(.red)
@@ -187,5 +189,41 @@ struct ContentView: View {
                            startPoint: .top, endPoint: .center)
         }
         .ignoresSafeArea()
+    }
+}
+
+/// 收款码弹窗：微信和支付宝
+struct TipJarView: View {
+    var body: some View {
+        VStack(spacing: 14) {
+            VStack(spacing: 4) {
+                Text("请小橘吃个罐头 🐟").font(Theme.rounded(17, .bold))
+                Text("CleanSlate 免费开源，觉得好用的话随意投喂～")
+                    .font(Theme.rounded(12))
+                    .foregroundColor(.secondary)
+            }
+            HStack(spacing: 14) {
+                code("wechat-pay", label: "微信")
+                code("alipay", label: "支付宝")
+            }
+            Text("谢谢你，小橘会长得更圆的！")
+                .font(Theme.rounded(12, .medium))
+                .foregroundColor(Theme.orangeDeep)
+        }
+        .padding(20)
+    }
+
+    private func code(_ name: String, label: String) -> some View {
+        VStack(spacing: 6) {
+            if let url = Bundle.main.url(forResource: name, withExtension: "jpg"),
+               let image = NSImage(contentsOf: url) {
+                Image(nsImage: image)
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(height: 210)
+                    .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+            }
+            Text(label).font(Theme.rounded(12, .medium)).foregroundColor(.secondary)
+        }
     }
 }

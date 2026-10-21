@@ -3,11 +3,13 @@ import SwiftUI
 
 /// 开发用：把主界面放进离屏窗口渲染成 PNG，方便不截屏也能检查布局
 enum Snapshot {
-    static func render(to path: String, dark: Bool) {
+    static func render(to path: String, dark: Bool, tipJar: Bool = false) {
         _ = NSApplication.shared
         NSApp.appearance = NSAppearance(named: dark ? .darkAqua : .aqua)
 
-        let view = NSHostingView(rootView: ContentView(controller: CleanupController()))
+        let root = tipJar ? AnyView(TipJarView().background(Color(nsColor: .windowBackgroundColor)))
+                         : AnyView(ContentView(controller: CleanupController()))
+        let view = NSHostingView(rootView: root)
         let size = view.fittingSize
         view.frame = NSRect(origin: .zero, size: size)
         let window = NSWindow(contentRect: view.frame, styleMask: .borderless, backing: .buffered, defer: false)

@@ -99,6 +99,10 @@
   .support { text-align: center; background: var(--card); border: 1px solid var(--line); border-radius: 28px; padding: 40px 24px; box-shadow: var(--shadow); }
   .support .can { font-size: 46px; }
   .support p { color: var(--muted); max-width: 30em; margin: 8px auto 24px; }
+  .qr { display: flex; flex-wrap: wrap; gap: 20px; justify-content: center; margin-bottom: 28px; }
+  .qr figure { margin: 0; }
+  .qr img { height: 260px; max-width: 100%; border-radius: 16px; box-shadow: var(--shadow); }
+  .qr figcaption { margin-top: 8px; color: var(--muted); font-size: 14px; }
 
   footer { text-align: center; color: var(--muted); font-size: 13px; padding: 40px 0 56px; }
   footer a { color: var(--muted); }
@@ -169,7 +173,11 @@
       <div class="support">
         <div class="can">🐟</div>
         <h2>请小橘吃个罐头</h2>
-        <p>CleanSlate 免费开源。如果它帮你把 Mac 擦得干干净净，欢迎给个 Star，或者请小橘吃个罐头，支持它继续长胖。</p>
+        <p>CleanSlate 免费开源。如果它帮你把 Mac 擦得干干净净，欢迎给个 Star，或者扫码请小橘吃个罐头，支持它继续长胖。</p>
+        <div class="qr">
+          <figure><img src="assets/wechat-pay.jpg" alt="微信收款码" loading="lazy" /><figcaption>微信</figcaption></figure>
+          <figure><img src="assets/alipay.jpg" alt="支付宝收款码" loading="lazy" /><figcaption>支付宝</figcaption></figure>
+        </div>
         <div class="buttons" id="support-buttons">
           <a class="btn ghost" href="https://github.com/SEUWanglibo/CleanSlate">⭐ 给个 Star</a>
         </div>

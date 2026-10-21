@@ -1,6 +1,9 @@
 #!/bin/zsh
 # 编译并打包成 CleanSlate.app（ad-hoc 签名）
 set -euo pipefail
+
+VERSION=1.0.1
+BUILD=2
 cd "$(dirname "$0")"
 
 # 同时编译 Apple 芯片和 Intel 两种架构
@@ -11,7 +14,7 @@ APP=build/CleanSlate.app
 rm -rf "$APP"
 mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources"
 cp "$BIN" "$APP/Contents/MacOS/CleanSlate"
-cp Resources/AppIcon.icns Resources/Mascot.png "$APP/Contents/Resources/"
+cp Resources/AppIcon.icns Resources/Mascot.png Resources/wechat-pay.jpg Resources/alipay.jpg "$APP/Contents/Resources/"
 
 cat > "$APP/Contents/Info.plist" <<'PLIST'
 <?xml version="1.0" encoding="UTF-8"?>
@@ -31,6 +34,9 @@ cat > "$APP/Contents/Info.plist" <<'PLIST'
 </dict>
 </plist>
 PLIST
+
+plutil -replace CFBundleShortVersionString -string "$VERSION" "$APP/Contents/Info.plist"
+plutil -replace CFBundleVersion -string "$BUILD" "$APP/Contents/Info.plist"
 
 xattr -cr "$APP"
 codesign --force --sign - "$APP"
