@@ -27,7 +27,18 @@
 
 三个选项可以任意组合，比如只开黑屏来擦屏幕。
 
-## 安装
+## 下载安装
+
+1. 从 [Releases](https://github.com/SEUWanglibo/CleanSlate/releases/latest) 下载 `CleanSlate.zip`，解压后把 `CleanSlate.app` 拖进「应用程序」。支持 macOS 13 及以上，Apple 芯片和 Intel 通用。
+2. 应用暂未经过苹果公证，首次打开可能提示"无法打开"或"已损坏"。在终端执行下面这行即可正常打开：
+
+   ```bash
+   xattr -dr com.apple.quarantine /Applications/CleanSlate.app
+   ```
+
+3. 按下面的说明授予辅助功能权限。
+
+## 从源码构建
 
 需要 macOS 13 或更高版本，以及 Xcode 或 Command Line Tools（`xcode-select --install`）。
 

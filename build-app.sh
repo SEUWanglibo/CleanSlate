@@ -3,8 +3,9 @@
 set -euo pipefail
 cd "$(dirname "$0")"
 
-swift build -c release
-BIN="$(swift build -c release --show-bin-path)/CleanSlate"
+# 同时编译 Apple 芯片和 Intel 两种架构
+swift build -c release --arch arm64 --arch x86_64
+BIN="$(swift build -c release --arch arm64 --arch x86_64 --show-bin-path)/CleanSlate"
 
 APP=build/CleanSlate.app
 rm -rf "$APP"
